@@ -28,12 +28,20 @@ const FAKEDATA = {
     ]
 }
 
-export default function Dashboard(){
-  const [clerkId, setClerkId] = useState("user_xyz789");
+export default function Dashboard({clerkId} : {clerkId: string}){
   const [items, setItems] = useState([]);
+  console.log(`User Id success: ${clerkId}`);
+  
+  // Fetch Items: 
+  const fetchItems = async () => {
+    const res = await fetch(`api/users/${clerkId}`);
+    const data = await res.json();
+    setItems(data.data); 
+    console.log(items);
+  }
 
   useEffect(() => {
-    setItems(FAKEDATA.items);
+    fetchItems();
   },[]);
 
   // Fetch Data 
@@ -45,7 +53,7 @@ export default function Dashboard(){
           Search
         </button>
       </form>
-      <button className="w-full px-4 py-2 mt-2 mb-4 bg-blue-200 hover:bg-blue-400 text-slate-700 rounded-md shadow-sm border border-slate-700">
+      <button className="w-full px-4 y-2 mt-2 mb-4 bg-blue-200 hover:bg-blue-400 text-slate-700 rounded-md shadow-sm border border-slate-700">
         New Item
       </button>
 

@@ -29,7 +29,7 @@ export default function Home(){
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <div className="p-8 bg-white rounded-lg shadow-md max-w-2xl text-center">
         <h1 className="text-3xl font-bold mb-4">Welcome to Find My All {user?.firstName}</h1>
-          <Dashboard/>
+          <Dashboard clerkId={user?.id}/>
       </div>
 
     </div>
