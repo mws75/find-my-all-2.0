@@ -34,9 +34,11 @@ export default function Dashboard({clerkId} : {clerkId: string}){
   
   // Fetch Items: 
   const fetchItems = async () => {
+    console.log("fetching Items");
     const res = await fetch(`api/users/${clerkId}`);
     const data = await res.json();
-    setItems(data.data); 
+    console.log("data fetch success: ", data);
+    setItems(data.items); 
     console.log(items);
   }
 
@@ -53,22 +55,25 @@ export default function Dashboard({clerkId} : {clerkId: string}){
           Search
         </button>
       </form>
-      <button className="w-full px-4 y-2 mt-2 mb-4 bg-blue-200 hover:bg-blue-400 text-slate-700 rounded-md shadow-sm border border-slate-700">
+      <button className="w-full px-4 py-2 mt-2 mb-4 bg-blue-200 hover:bg-blue-400 text-slate-700 rounded-md shadow-sm border border-slate-700">
         New Item
       </button>
-
-      <ul className="w-full px-4 py-2 mt-2 bg-fuchsia-300 border-2 rounded-xl shadow-md">
-        {items.map((item) => (
-          <li key={item._id} className="flex w-full items-center px-4 py-2">
-            <button className="bg-fuchsia-100 hover:bg-fuchsia-200 text-slate-700 px-4 py-2 rounded-md shadow-sm">
-                edit
-            </button> 
-            <p className="w-full bg-slate-50 rounded-md px-4 py-2 border border-slate-700 mx-2">
-              {item.name} - {item.location}
-            </p> 
-            <button className="bg-fuchsia-200 hover:bg-fuchsia-100 px-4 py-3 rounded-md shadow-sm"><FaTrashAlt /></button> </li>
-        ))}
-      </ul>
+      {items.length === 0 ? (
+        <p> Click New Item to add your first! </p> 
+      ) : (
+        <ul className="w-full px-4 py-2 mt-2 bg-fuchsia-300 border-2 rounded-xl shadow-md">
+          {items.map((item) => (
+            <li key={item._id} className="flex w-full items-center px-4 py-2">
+              <button className="bg-fuchsia-100 hover:bg-fuchsia-200 text-slate-700 px-4 py-2 rounded-md shadow-sm">
+                  edit
+              </button> 
+              <p className="w-full bg-slate-50 rounded-md px-4 py-2 border border-slate-700 mx-2">
+                {item.name} - {item.location}
+              </p> 
+              <button className="bg-fuchsia-200 hover:bg-fuchsia-100 px-4 py-3 rounded-md shadow-sm"><FaTrashAlt /></button> </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

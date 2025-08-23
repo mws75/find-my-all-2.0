@@ -27,6 +27,7 @@ export async function GET(
       .collection("find_all_users")
       .findOne({clerkId});
 
+    console.log("User Found")
     // If user doesn't exist, create record 
     if(!user){
       console.log("user did not exist, going to create new record")
@@ -47,7 +48,8 @@ export async function GET(
         console.log("Clerk API Error: ", clerkError);
         throw clerkError; 
       }
-    }           
+    }          
+    console.log("User Items: ", user);
     return NextResponse.json({
       success: true, 
       items: user.items || []
