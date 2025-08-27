@@ -90,7 +90,13 @@ export default function Dashboard({clerkId} : {clerkId: string}){
       console.log("error on submitNewItem", error)
     }
   }
-
+  
+  const cancelSubmit = () => {
+    console.log("User Canceled New Item creation");
+    setNewItemForm(false);
+    setNewItemName("");
+    setNewItemLocation("");
+  }
 
   // Fetch Data 
   return (
@@ -118,10 +124,16 @@ export default function Dashboard({clerkId} : {clerkId: string}){
             placeholder="location..." 
             value={newItemLocation}
             onChange={(e) => setNewItemLocation(e.target.value)}/>
-          <button type="submit" className="my-2 px-4 py-2 bg-emerald-100 hover:bg-emerald-300 rounded-md border border-slate-700"
-            onClick={() => submitNewItem(newItemName, newItemLocation)}>
-            Submit
-          </button>
+          <div className="flex items-center justify-center">
+            <button type="submit" className="my-2 mx-2 px-4 py-2 bg-emerald-100 hover:bg-emerald-300 rounded-md border border-slate-700"
+              onClick={() => submitNewItem(newItemName, newItemLocation)}>
+              Submit
+            </button>
+            <button type="button" className="my-2 px-4 py-2 bg-emerald-100 hover:bg-emerald-300 rounded-md border border-slate-700"
+              onClick={() => cancelSubmit()}>
+              Cancel
+            </button> 
+          </div> 
         </form>
       )}
       {items.length === 0 ? (
