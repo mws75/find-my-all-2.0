@@ -8,15 +8,15 @@
     [x] When User Logs in, if they have not logged in before it will create a new user.
     [x] If there are no items - display Add your first Item
 
-## 2. Create Item Feature [] 
+## 2. Create Item Feature [x] 
     [x] Users should be able to create and item now.
         [x] api 
         [x] Front End 
 
 ### feat_create_item [x] 
     [x] Add POST to API
-    [x] Add CreateItem to dashboard.tsx 
-    [] Cancel New Item  
+    [x] Add CreateItem to dashboard.tsx
+    [x] Cancel New Item  
 ## 3. Update
 
 ### feat_update_item 
