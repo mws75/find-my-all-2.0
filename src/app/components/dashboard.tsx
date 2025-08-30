@@ -100,36 +100,62 @@ export default function Dashboard({clerkId} : {clerkId: string}){
 
   // Fetch Data 
   return (
-    <div className="m-4 p-4 rounded-lg shadow-md justify-center border-2 border-slate-700" >
+    <div className="m-4 p-4 rounded-lg shadow-md justify-center 
+                    border-2 border-slate-700 
+                    dark:bg-gray-800 dark:border-slate-600" >
       <form id="searchBar" className="justify-center flex">
-        <input type="text" placeholder="Search..." className="w-full px-4 py-2 mr-2 font-black rounded-md border border-slate-700"/>
-        <button type="submit" className="px-4 py-2 bg-emerald-100 hover:bg-emerald-300 rounded-md font-slate-50 shadow-sm border border-slate-700"> 
+        <input className="w-full px-4 py-2 mr-2 font-black 
+                          rounded-md border border-slate-700 
+                          dark:text-white dark:bg-slate-800" 
+          type="text" 
+          placeholder="Search..."/>
+        <button className="px-4 py-2 bg-emerald-100 hover:bg-emerald-300 
+                           rounded-md font-slate-50 shadow-sm border border-slate-700 
+                           dark:bg-emerald-700 dark:hover:emerald-900" 
+          type="submit"> 
           Search 
         </button>        
       </form>
 
-      <button className="w-full px-4 py-2 mt-2 mb-4 bg-blue-200 hover:bg-blue-400 text-slate-700 rounded-md shadow-sm border border-slate-700"
+      <button className="w-full px-4 py-2 mt-2 mb-4 
+                         bg-blue-200 hover:bg-blue-400 
+                         border border-slate-700 rounded-md shadow-sm 
+                         text-slate-700 
+                         dark:bg-blue-700 dark:hover:bg-blue-900 dark:text-white"
         onClick={() => setNewItemForm(true)}>
         New Item
       </button>
       {newItemForm === true && (
         <form className="mt-4">
-          <input className="w-full my-2 px-4 py-2 mr-2 font-black rounded-md border border-slate-700"
+          <input className="w-full my-2 px-4 py-2 mr-2 
+                            font-black rounded-md 
+                            border border-slate-700 
+                            dark:bg-slate-800 dark:text-white"
             type="text" 
             placeholder="item..." 
             value={newItemName}
             onChange={(e) => setNewItemName(e.target.value)}/>
-          <input className="w-full my-2 px-4 py-2 mr-2 font-black rounded-md border border-slate-700"
+          <input className="w-full my-2 px-4 py-2 mr-2 font-black 
+                            rounded-md border border-slate-700 
+                            dark:bg-slate-800 dark:text-white"
             type="text" 
             placeholder="location..." 
             value={newItemLocation}
             onChange={(e) => setNewItemLocation(e.target.value)}/>
           <div className="flex items-center justify-center">
-            <button type="submit" className="my-2 mx-2 px-4 py-2 bg-emerald-100 hover:bg-emerald-300 rounded-md border border-slate-700"
+            <button type="submit" className="my-2 mx-2 px-4 py-2 
+                                   bg-emerald-100 hover:bg-emerald-300 
+                                   border border-slate-700 rounded-md 
+                                   text-slate-700 
+                                   dark:bg-emerald-700 dark:hover:bg-emerald-900 dark:text-white"
               onClick={() => submitNewItem(newItemName, newItemLocation)}>
               Submit
             </button>
-            <button type="button" className="my-2 px-4 py-2 bg-emerald-100 hover:bg-emerald-300 rounded-md border border-slate-700"
+            <button type="button" className="my-2 px-4 py-2 
+                                    bg-emerald-100 hover:bg-emerald-300 
+                                    border border-slate-700 rounded-md 
+                                    text-slate-700 
+                                    dark:bg-emerald-700 dark:hover:bg-emerald-900 dark:text-white"
               onClick={() => cancelSubmit()}>
               Cancel
             </button> 
@@ -139,16 +165,30 @@ export default function Dashboard({clerkId} : {clerkId: string}){
       {items.length === 0 ? (
         <p> Click New Item to add your first! </p> 
       ) : (
-        <ul className="w-full px-4 py-2 mt-2 bg-fuchsia-300 border-2 rounded-xl shadow-md">
+        <ul className="w-full px-4 py-2 mt-2 
+                       bg-fuchsia-300 border-2 rounded-xl shadow-md 
+                       dark:bg-fuchsia-800 dark:border-fuchsia-600">
           {items.map((item) => (
             <li key={item._id} className="flex w-full items-center px-4 py-2">
-              <button className="bg-fuchsia-100 hover:bg-fuchsia-200 text-slate-700 px-4 py-2 rounded-md shadow-sm">
+              <button className="px-4 py-2 
+                                 bg-fuchsia-100 hover:bg-fuchsia-200 
+                                 text-slate-700 rounded-md shadow-sm 
+                                 dark:bg-fuchsia-600 dark:hover:bg-fuchsia-700 dark:text-white">
                   edit
               </button> 
-              <p className="w-full bg-slate-50 rounded-md px-4 py-2 border border-slate-700 mx-2">
+              <p className="w-full px-4 py-2 mx-2 
+                            bg-slate-50 border border-slate-700 rounded-md 
+                            text-slate-700 
+                            dark:bg-slate-700 dark:border-slate-600 dark:text-white">
                 {item.name} - {item.location}
               </p> 
-              <button className="bg-fuchsia-200 hover:bg-fuchsia-100 px-4 py-3 rounded-md shadow-sm"><FaTrashAlt /></button> </li>
+              <button className="px-4 py-3 
+                                 bg-fuchsia-200 hover:bg-fuchsia-100 
+                                 text-slate-700 rounded-md shadow-sm 
+                                 dark:bg-fuchsia-600 dark:hover:bg-fuchsia-500 dark:text-white">
+                <FaTrashAlt />
+              </button> 
+            </li>
           ))}
         </ul>
       )}
