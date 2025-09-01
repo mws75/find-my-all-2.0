@@ -102,5 +102,36 @@ export async function POST(
   } 
 }
 
+// DELETE ITEM 
+export async function DELETE(
+ req: Request, 
+ {params} : {params: {id: string}}
+){
+  try{
+    // Get User using Clerk Id 
+    const clerkId =  (await params).id; 
+    const {itemName} = await req.json();
+    console.log(`Deleting item: ${itemName} for user: ${clerkId}`);
 
+    // contect to Database 
+    console.log("connecting to database");
+    await client.connect();
+    const db = client.db("find_all_database");
+    const collection = db.collection("find_all_users");
+    console.log("succesffult connected to db.");
+    
+    // Modify User by removing item from item array
+    const result = await collection.findOneAndUpdate(
+      {clerkId: clerkId}, 
+      {$pull: {items: {name: itemName}}}
+    );
+    console.log(`${itemName} successfully delete`);
+    // Return Success Message 
+    return NextResponse.json({success: true, result}); 
+  } catch (error) {
+    console.log("error caught: ", error);
+    console.log("error message: ", error.message);
+    return NextResponse.json({error: "Unable to delete item"}, {status: 400})
+  }
+}
 

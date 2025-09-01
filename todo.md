@@ -17,6 +17,7 @@
     [x] Add POST to API
     [x] Add CreateItem to dashboard.tsx
     [x] Cancel New Item  
+
 ## 3. Update
 
 ### feat_update_item 
@@ -27,4 +28,18 @@
 ## 4. Delete 
 
 
-## 5. Search 
+## 5. Search
+
+
+## 6. Dark Mode [x]
+
+### feat_dark_mode 
+    [x] website in dark mode when night, and light mode during the day.
+
+
+## Wedding: 
+1. Rough Draft to Thomas
+2. More cheap things on directory 
+3. Fill out music sheet
+4. Shirt and Tie shopping 
+5. Text Nick - DONE  

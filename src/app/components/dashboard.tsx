@@ -73,12 +73,21 @@ export default function Dashboard({clerkId} : {clerkId: string}){
     }
   }
   
+  const cleanText = (text: string): string => {
+    return text 
+      .trim()
+      .replace(/\s+/g, ' ')
+      .replace(/[\x00-\x1F\x17F]/g, '');
+  };
+
   const submitNewItem = async (newItemName: string, newItemLocation: string) => {
     try{
       // TODO - check that NewItem and ItemLocation are strings? 
+      const newItemNameClean = cleanText(newItemName);
+      const newItemLocationClean = cleanText(newItemLocation);
       
       // Call insert New Item 
-      insertItem({name: newItemName, location: newItemLocation});
+      insertItem({name: newItemNameClean, location: newItemLocationClean});
       // Rest State 
       setNewItemForm(false);
       setNewItemName("");
@@ -96,6 +105,31 @@ export default function Dashboard({clerkId} : {clerkId: string}){
     setNewItemForm(false);
     setNewItemName("");
     setNewItemLocation("");
+  }
+
+  const deleteItem = async (item: string) => {
+    try{
+      const res = await fetch(`api/users/${clerkId}`, {
+         method: 'DELETE',
+         headers:{'Content-Type': 'application/json'},
+         body: JSON.stringify({itemName: item})
+         
+         if (!res.ok){
+          throw new Error(`Delete failed: ${res.status}`);
+         }
+      })
+    } catch (error){
+      console.log("error on deleteItem function: ", error.message);
+    }
+  }
+
+
+  const clickDeleteItem = async (itemName: string) => {
+    console.log(`Deleting item: ${itemName}`);
+    // deleting item 
+    await deleteItem(itemName); // this will wait for delete to complete 
+    console.log("Deleted Item");
+    fetchItems(); 
   }
 
   // Fetch Data 
@@ -169,7 +203,7 @@ export default function Dashboard({clerkId} : {clerkId: string}){
                        bg-fuchsia-300 border-2 rounded-xl shadow-md 
                        dark:bg-fuchsia-800 dark:border-fuchsia-600">
           {items.map((item) => (
-            <li key={item._id} className="flex w-full items-center px-4 py-2">
+            <li key={item.name} className="flex w-full items-center px-4 py-2">
               <button className="px-4 py-2 
                                  bg-fuchsia-100 hover:bg-fuchsia-200 
                                  text-slate-700 rounded-md shadow-sm 
@@ -185,7 +219,8 @@ export default function Dashboard({clerkId} : {clerkId: string}){
               <button className="px-4 py-3 
                                  bg-fuchsia-200 hover:bg-fuchsia-100 
                                  text-slate-700 rounded-md shadow-sm 
-                                 dark:bg-fuchsia-600 dark:hover:bg-fuchsia-500 dark:text-white">
+                                 dark:bg-fuchsia-600 dark:hover:bg-fuchsia-500 dark:text-white"
+                onClick={()=> clickDeleteItem(item.name)}>
                 <FaTrashAlt />
               </button> 
             </li>
