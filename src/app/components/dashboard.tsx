@@ -1,6 +1,6 @@
 "use client";
 import { FaTrashAlt } from "react-icons/fa";
-import {useState, useEffect} from "react"
+import {useState, useEffect, useRef} from "react"
 import {Item} from "@/types/item";
 /*
   Trash Icon - <FaTrashAlt />
@@ -35,6 +35,7 @@ export default function Dashboard({clerkId} : {clerkId: string}){
   const [newItemLocation, setNewItemLocation] = useState("");
   const [noItemsFound, setNoItemsFound] = useState(false);
   const [searchInput, setSearchInput] = useState("");
+  const newItemNameRef = useRef<HTMLInputElemet>(null);
   console.log(`User Id success: ${clerkId}`);
 
   
@@ -210,7 +211,11 @@ export default function Dashboard({clerkId} : {clerkId: string}){
                          border border-slate-700 rounded-md shadow-sm 
                          text-slate-700 
                          dark:bg-blue-700 dark:hover:bg-blue-900 dark:text-white"
-        onClick={() => setNewItemForm(true)}>
+        onClick={() => {
+          setNewItemForm(true);
+          // setTimeout - Do this after the next render
+          setTimeout(() => newItemNameRef.current?.focus(), 0);
+        }}>
         New Item
       </button>
       {newItemForm === true && (
@@ -219,6 +224,7 @@ export default function Dashboard({clerkId} : {clerkId: string}){
                             font-black rounded-md 
                             border border-slate-700 
                             dark:bg-slate-800 dark:text-white"
+            ref={newItemNameRef}
             type="text" 
             placeholder="item..." 
             value={newItemName}
