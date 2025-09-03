@@ -25,7 +25,8 @@
     [] Click edit and cancel 
     [] Click edit and delete 
 
-## 4. Delete 
+## 4. Delete [x]
+    [x] Able to delete Item
 
 
 ## 5. Search

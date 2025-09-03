@@ -29,10 +29,12 @@ const FAKEDATA = {
 }
 
 export default function Dashboard({clerkId} : {clerkId: string}){
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState<Item[]>([]);
   const [newItemForm, setNewItemForm] = useState(false);
   const [newItemName, setNewItemName] = useState("");
   const [newItemLocation, setNewItemLocation] = useState("");
+  const [noItemsFound, setNoItemsFound] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
   console.log(`User Id success: ${clerkId}`);
 
   
@@ -106,6 +108,55 @@ export default function Dashboard({clerkId} : {clerkId: string}){
     setNewItemName("");
     setNewItemLocation("");
   }
+  //
+  // const searchItem = async (searchInput: string) => {
+  //   try{
+  //     const res = await fetch(`api/users/${clerkId}`, {
+  //  method: 'GET',
+  //       header:{'Content-Type': 'application/json'},
+  //       body: JSON.stringify({itemName: searchInput});
+  //     })
+  //     if (!res.ok){
+  //       throw new Error(`Search Failed: ${res.status}`);
+  //     }
+  //   } catch (error) {
+  //     console.log(`Error unable to search: ${error.message}`);
+  //   }
+  // }
+  //
+  
+  const handleSearch = () => {
+    console.log("handleSearch() running");
+    try{
+      const filtered = items.filter(item => 
+                                    item.name.toLowerCase().includes(searchInput.toLowerCase())
+                                    || item.location.toLowerCase().includes(searchInput.toLowerCase())
+                                    );
+      if(filtered.length === 0) {
+        alert("no items found");
+        setNoItemsFound(true);
+      } else {
+        setNoItemsFound(false);
+        setItems(filtered);
+      }   
+    } catch (error){
+      throw new Error(`search failed: ${error.message}`); 
+    }
+  }
+
+
+  const clickSearchItem = () => {
+    console.log(`Searching for item: ${searchInput}`);
+    try{
+      if(searchInput === "")
+        throw new Error();
+      const item_array = handleSearch();
+      console.log(`Search successfull`);
+    } catch (error)
+    {
+      fetchItems(); 
+    }
+  }
 
   const deleteItem = async (item: string) => {
     try{
@@ -113,11 +164,10 @@ export default function Dashboard({clerkId} : {clerkId: string}){
          method: 'DELETE',
          headers:{'Content-Type': 'application/json'},
          body: JSON.stringify({itemName: item})
-         
-         if (!res.ok){
-          throw new Error(`Delete failed: ${res.status}`);
-         }
       })
+      if (!res.ok){
+          throw new Error(`Delete failed: ${res.status}`);
+      }
     } catch (error){
       console.log("error on deleteItem function: ", error.message);
     }
@@ -137,16 +187,20 @@ export default function Dashboard({clerkId} : {clerkId: string}){
     <div className="m-4 p-4 rounded-lg shadow-md justify-center 
                     border-2 border-slate-700 
                     dark:bg-gray-800 dark:border-slate-600" >
-      <form id="searchBar" className="justify-center flex">
+      <form id="searchBar" className="justify-center flex"
+            onSubmit={(e) => e.preventDefault()}>
         <input className="w-full px-4 py-2 mr-2 font-black 
                           rounded-md border border-slate-700 
                           dark:text-white dark:bg-slate-800" 
-          type="text" 
+          type="text"
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
           placeholder="Search..."/>
         <button className="px-4 py-2 bg-emerald-100 hover:bg-emerald-300 
                            rounded-md font-slate-50 shadow-sm border border-slate-700 
                            dark:bg-emerald-700 dark:hover:emerald-900" 
-          type="submit"> 
+          type="submit"
+          onClick={() => clickSearchItem()}> 
           Search 
         </button>        
       </form>
