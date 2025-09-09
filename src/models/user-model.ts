@@ -27,8 +27,8 @@ export type TUser = User & {
 const itemSchema = new mongoose.Schema(
   {
     name: {type: String, required: true},
-    location: {type: String}
-    image_url: {type: String, default null}
+    location: {type: String},
+    image_url: {type: String, default: null}
   },
   {timestamps: true}
 ); 
@@ -36,8 +36,8 @@ const itemSchema = new mongoose.Schema(
 const userSchema = new mongoose.Schema(
   {
     clerkId: {type: String, required: true, unique: true, index:true},
-    name: String
-    email: {type: string, required: true, unique: true),
+    name: String,
+    email: {type: string, required: true, unique: true},
     items: [itemSchema],
   },
   {timestamps: true}

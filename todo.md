@@ -30,7 +30,8 @@
 
 
 ## 5. Search
-
+### feat_search_bar [x]
+    Serach Bar fully functional
 
 ## 6. Dark Mode [x]
 

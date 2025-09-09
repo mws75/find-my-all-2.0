@@ -6,7 +6,7 @@ import {Item} from "@/types/item";
 
 export async function GET(
   _req: Request, 
-  {params}: {params: {id: string}}
+  {params}: {params: Promise<{id: string}>}
 ){
   console.log(`Attempting to get user data for ${params}`);
   try{
@@ -38,13 +38,13 @@ export async function GET(
         // console.log("ClerkUser: ", clerkUser);
         const emailAddress = clerkUser.emailAddresses[0]?.emailAddress;
         // Inserting New User in Mongo DB.  
-        await db.collection("find_all_users").insertOne({
+        const insertResult = await db.collection("find_all_users").insertOne({
           clerkId: clerkId,
           email: emailAddress, 
           items: []
         });
         console.log(`User ${clerkId} successfully added to mongodb`);
-        user = {clerkId, email: emailAddress, items: []};
+        user = {_id: insertResult.insertedId, clerkId, email: emailAddress, items: []};
       } catch (clerkError) {
         console.log("Clerk API Error: ", clerkError);
         throw clerkError; 
@@ -58,14 +58,14 @@ export async function GET(
   }
   catch(error){
     console.log("error caught: ", error);
-    console.log("error message:", error.message);
+    console.log("error message:", error instanceof Error ? error.message : String(error));
     return NextResponse.json({error: "Unable to manage request"}, {status: 400})
   }
 }
 
 export async function POST(
   req: Request,
-  {params}: {params: {id: string}}
+  {params}: {params: Promise<{id: string}>}
 ){
   console.log("Inserting new Item");
   try{
@@ -97,7 +97,7 @@ export async function POST(
 
   } catch (error){
     console.log("error caught: ", error);
-    console.log("error message: ", error.message);
+    console.log("error message: ", error instanceof Error ? error.message :  String(error));
     return NextResponse.json({error: "Unable to post item request"}, {status: 400})
   } 
 }
@@ -105,7 +105,7 @@ export async function POST(
 // DELETE ITEM 
 export async function DELETE(
  req: Request, 
- {params} : {params: {id: string}}
+ {params} : {params: Promise<{id: string}>}
 ){
   try{
     // Get User using Clerk Id 
@@ -123,14 +123,14 @@ export async function DELETE(
     // Modify User by removing item from item array
     const result = await collection.findOneAndUpdate(
       {clerkId: clerkId}, 
-      {$pull: {items: {name: itemName}}}
+      {$pull: {items: {name: itemName}}} as any
     );
     console.log(`${itemName} successfully delete`);
     // Return Success Message 
     return NextResponse.json({success: true, result}); 
   } catch (error) {
     console.log("error caught: ", error);
-    console.log("error message: ", error.message);
+    console.log("error message: ", error instanceof Error ? error.message : String(error));
     return NextResponse.json({error: "Unable to delete item"}, {status: 400})
   }
 }

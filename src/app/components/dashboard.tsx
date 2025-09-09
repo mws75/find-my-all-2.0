@@ -216,7 +216,7 @@ export default function Dashboard({clerkId} : {clerkId: string}){
           // setTimeout - Do this after the next render
           setTimeout(() => newItemNameRef.current?.focus(), 0);
         }}>
-        New Item
+        New Ite
       </button>
       {newItemForm === true && (
         <form className="mt-4">
