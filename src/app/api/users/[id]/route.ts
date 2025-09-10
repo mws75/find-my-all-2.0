@@ -1,8 +1,6 @@
 import client from "@/lib/mongodb";
-import {ObjectId, ReturnDocument} from "mongodb"; 
 import {NextResponse} from "next/server"; 
-import {clerkClient} from "@clerk/nextjs/server"; 
-import {Item} from "@/types/item";
+import {clerkClient} from "@clerk/nextjs/server";
 
 export async function GET(
   _req: Request, 
@@ -123,6 +121,7 @@ export async function DELETE(
     // Modify User by removing item from item array
     const result = await collection.findOneAndUpdate(
       {clerkId: clerkId}, 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       {$pull: {items: {name: itemName}}} as any
     );
     console.log(`${itemName} successfully delete`);

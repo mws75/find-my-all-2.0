@@ -1,32 +1,12 @@
 "use client";
 import { FaTrashAlt } from "react-icons/fa";
-import {useState, useEffect, useRef} from "react"
+import {useState, useEffect, useRef, useCallback} from "react"
 import {Item} from "@/types/item";
 /*
   Trash Icon - <FaTrashAlt />
 
  */
 
-const FAKEDATA = {
-  items: [
-      {
-        name: 'Backpack',
-        location: 'Closet',
-        image: 'https://example.com/backpack.jpg',
-        _id: "6894f79eb73893ff9ac399a6",
-        createdAt: "2025-08-07T18:59:42.488Z",
-        updatedAt: "2025-08-07T18:59:42.488Z"
-      },
-      {
-        name: 'Passport',
-        location: 'Desk Drawer',
-        image: null,
-        _id: "6894f79eb73893ff9ac399a7",
-        createdAt: "2025-08-07T18:59:42.488Z",
-        updatedAt: "2025-08-07T18:59:42.488Z"
-      },
-    ]
-}
 
 export default function Dashboard({clerkId} : {clerkId: string}){
   const [items, setItems] = useState<Item[]>([]);
@@ -35,23 +15,23 @@ export default function Dashboard({clerkId} : {clerkId: string}){
   const [newItemLocation, setNewItemLocation] = useState("");
   const [noItemsFound, setNoItemsFound] = useState(false);
   const [searchInput, setSearchInput] = useState("");
-  const newItemNameRef = useRef<HTMLInputElemet>(null);
+  const newItemNameRef = useRef<HTMLInputElement>(null);
   console.log(`User Id success: ${clerkId}`);
 
   
   // Fetch Items: 
-  const fetchItems = async () => {
+  const fetchItems = useCallback(async () => {
     console.log("fetching Items");
     const res = await fetch(`api/users/${clerkId}`);
     const data = await res.json();
     console.log("data fetch success: ", data);
     setItems(data.items); 
     console.log(items);
-  }
+  }, [clerkId])
 
   useEffect(() => {
     fetchItems();
-  },[]);
+  },[fetchItems]);
 
   const insertItem = async (item : Item) => {
     try{
@@ -72,7 +52,7 @@ export default function Dashboard({clerkId} : {clerkId: string}){
       }
     } catch (error){
       console.log("error: ", error);
-      console.log("error message: ", error.message);
+      console.log("error message: ", error instanceof Error ? error.message : String(error));
     }
   }
   
@@ -141,7 +121,7 @@ export default function Dashboard({clerkId} : {clerkId: string}){
         setItems(filtered);
       }   
     } catch (error){
-      throw new Error(`search failed: ${error.message}`); 
+      throw new Error(`search failed: ${error}`); 
     }
   }
 
@@ -151,10 +131,9 @@ export default function Dashboard({clerkId} : {clerkId: string}){
     try{
       if(searchInput === "")
         throw new Error();
-      const item_array = handleSearch();
+      handleSearch();
       console.log(`Search successfull`);
-    } catch (error)
-    {
+    } catch {
       fetchItems(); 
     }
   }
@@ -170,7 +149,7 @@ export default function Dashboard({clerkId} : {clerkId: string}){
           throw new Error(`Delete failed: ${res.status}`);
       }
     } catch (error){
-      console.log("error on deleteItem function: ", error.message);
+      console.log("error on deleteItem function: ", error);
     }
   }
 

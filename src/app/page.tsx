@@ -1,16 +1,9 @@
 "use client"; 
-import Image from "next/image";
-import {useState, useEffect} from "react" 
 import Dashboard from "@/app/components/dashboard";
 import {useUser} from "@clerk/nextjs";
 import {redirect} from "next/navigation";
 
-
-
-
 export default function Home(){
-  const [items, setItems] = useState([]);
-  const [search, setSearch] = useState("");
   const {isLoaded, isSignedIn, user} = useUser();
   
   if(!isLoaded){

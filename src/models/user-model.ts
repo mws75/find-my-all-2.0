@@ -1,9 +1,7 @@
 import mongoose from "mongoose";
-import {Document} from "mongoose"; 
-import {emitWEarning} from "process";
 
 
--- Interfaces 
+// Interfaces 
 export interface Item {
   name: string,
   location?: string,
@@ -37,14 +35,14 @@ const userSchema = new mongoose.Schema(
   {
     clerkId: {type: String, required: true, unique: true, index:true},
     name: String,
-    email: {type: string, required: true, unique: true},
+    email: {type: String, required: true, unique: true},
     items: [itemSchema],
   },
   {timestamps: true}
 );
 
-export const UserModel = mongoose.model.user || 
-  mongose.model<MongoUser>("User", userSchema, "find_all_users");
+export const UserModel = mongoose.models.User || 
+  mongoose.model<MongoUser>("User", userSchema, "find_all_users");
 
 
 
