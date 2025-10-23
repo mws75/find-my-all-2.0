@@ -1,94 +1,101 @@
 "use client";
 import { FaTrashAlt } from "react-icons/fa";
-import {useState, useEffect, useRef, useCallback} from "react"
-import {Item} from "@/types/item";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { Item } from "@/types/item";
 /*
   Trash Icon - <FaTrashAlt />
 
  */
 
-
-export default function Dashboard({clerkId} : {clerkId: string}){
+export default function Dashboard({ clerkId }: { clerkId: string }) {
   const [items, setItems] = useState<Item[]>([]);
   const [newItemForm, setNewItemForm] = useState(false);
   const [newItemName, setNewItemName] = useState("");
   const [newItemLocation, setNewItemLocation] = useState("");
+  const [originalItemName, setOriginalItemName] = useState("");
   const [noItemsFound, setNoItemsFound] = useState(false);
   const [searchInput, setSearchInput] = useState("");
+  const [editingItemName, setEditingItemName] = useState<string | null>(null);
+  const [editItemName, setEditItemName] = useState("");
+  const [editItemLocation, setEditItemLocation] = useState("");
   const newItemNameRef = useRef<HTMLInputElement>(null);
   console.log(`User Id success: ${clerkId}`);
 
-  
-  // Fetch Items: 
+  // Fetch Items:
   const fetchItems = useCallback(async () => {
     console.log("fetching Items");
     const res = await fetch(`api/users/${clerkId}`);
     const data = await res.json();
     console.log("data fetch success: ", data);
-    setItems(data.items); 
+    setItems(data.items);
     console.log(items);
-  }, [clerkId])
+  }, [clerkId]);
 
   useEffect(() => {
     fetchItems();
-  },[fetchItems]);
+  }, [fetchItems]);
 
-  const insertItem = async (item : Item) => {
-    try{
+  const insertItem = async (item: Item) => {
+    try {
       console.log("inserting item");
-      const res = await fetch(`api/users/${clerkId}`,{
-        method: 'POST',
+      const res = await fetch(`api/users/${clerkId}`, {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(item)
+        body: JSON.stringify(item),
       });
       const data = await res.json();
-      if(data.success){
+      if (data.success) {
         console.log("item successfully added");
         await fetchItems();
-      } else { 
+      } else {
         console.error("Failed to add item: ", data.error);
       }
-    } catch (error){
+    } catch (error) {
       console.log("error: ", error);
-      console.log("error message: ", error instanceof Error ? error.message : String(error));
+      console.log(
+        "error message: ",
+        error instanceof Error ? error.message : String(error),
+      );
     }
-  }
-  
-  const cleanText = (text: string): string => {
-    return text 
-      .trim()
-      .replace(/\s+/g, ' ')
-      .replace(/[\x00-\x1F\x17F]/g, '');
   };
 
-  const submitNewItem = async (newItemName: string, newItemLocation: string) => {
-    try{
-      // TODO - check that NewItem and ItemLocation are strings? 
+  const cleanText = (text: string): string => {
+    return text
+      .trim()
+      .replace(/\s+/g, " ")
+      .replace(/[\x00-\x1F\x17F]/g, "");
+  };
+
+  const submitNewItem = async (
+    newItemName: string,
+    newItemLocation: string,
+  ) => {
+    try {
+      // TODO - check that NewItem and ItemLocation are strings?
       const newItemNameClean = cleanText(newItemName);
       const newItemLocationClean = cleanText(newItemLocation);
-      
-      // Call insert New Item 
-      insertItem({name: newItemNameClean, location: newItemLocationClean});
-      // Rest State 
+
+      // Call insert New Item
+      insertItem({ name: newItemNameClean, location: newItemLocationClean });
+      // Rest State
       setNewItemForm(false);
       setNewItemName("");
-      setNewItemLocation(""); 
+      setNewItemLocation("");
 
-      console.log(`New Item: ${newItemName} successfully inserted`); 
-
-    } catch (error){
-      console.log("error on submitNewItem", error)
+      console.log(`New Item: ${newItemName} successfully inserted`);
+    } catch (error) {
+      console.log("error on submitNewItem", error);
     }
-  }
-  
+  };
+
   const cancelSubmit = () => {
     console.log("User Canceled New Item creation");
     setNewItemForm(false);
     setNewItemName("");
     setNewItemLocation("");
-  }
+  };
   //
   // const searchItem = async (searchInput: string) => {
   //   try{
@@ -105,87 +112,152 @@ export default function Dashboard({clerkId} : {clerkId: string}){
   //   }
   // }
   //
-  
+
   const handleSearch = () => {
     console.log("handleSearch() running");
-    try{
-      const filtered = items.filter(item => 
-                                    item.name.toLowerCase().includes(searchInput.toLowerCase())
-                                    || item.location.toLowerCase().includes(searchInput.toLowerCase())
-                                    );
-      if(filtered.length === 0) {
+    try {
+      const filtered = items.filter(
+        (item) =>
+          item.name.toLowerCase().includes(searchInput.toLowerCase()) ||
+          item.location.toLowerCase().includes(searchInput.toLowerCase()),
+      );
+      if (filtered.length === 0) {
         alert("no items found");
         setNoItemsFound(true);
       } else {
         setNoItemsFound(false);
         setItems(filtered);
-      }   
-    } catch (error){
-      throw new Error(`search failed: ${error}`); 
+      }
+    } catch (error) {
+      throw new Error(`search failed: ${error}`);
     }
-  }
-
+  };
 
   const clickSearchItem = () => {
     console.log(`Searching for item: ${searchInput}`);
-    try{
-      if(searchInput === "")
-        throw new Error();
+    try {
+      if (searchInput === "") throw new Error();
       handleSearch();
       console.log(`Search successfull`);
     } catch {
-      fetchItems(); 
+      fetchItems();
     }
-  }
+  };
 
   const deleteItem = async (item: string) => {
-    try{
+    try {
       const res = await fetch(`api/users/${clerkId}`, {
-         method: 'DELETE',
-         headers:{'Content-Type': 'application/json'},
-         body: JSON.stringify({itemName: item})
-      })
-      if (!res.ok){
-          throw new Error(`Delete failed: ${res.status}`);
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ itemName: item }),
+      });
+      if (!res.ok) {
+        throw new Error(`Delete failed: ${res.status}`);
       }
-    } catch (error){
+    } catch (error) {
       console.log("error on deleteItem function: ", error);
     }
-  }
-
+  };
 
   const clickDeleteItem = async (itemName: string) => {
     console.log(`Deleting item: ${itemName}`);
-    // deleting item 
-    await deleteItem(itemName); // this will wait for delete to complete 
+    // deleting item
+    await deleteItem(itemName); // this will wait for delete to complete
     console.log("Deleted Item");
-    fetchItems(); 
-  }
+    fetchItems();
+  };
 
-  // Fetch Data 
+  const saveEditItem = async (
+    originalItemName: string,
+    editItemName: string,
+    editItemLocation: string,
+  ) => {
+    try {
+      const editItemNameClean = cleanText(editItemName);
+      const editItemLocationClean = cleanText(editItemLocation);
+
+      const res = await fetch(`api/users/${clerkId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          originalItemName: originalItemName,
+          editItemName: editItemNameClean,
+          editItemLocation: editItemLocationClean,
+        }),
+      });
+      if (!res.ok) {
+        throw new Error(`Update failed: ${res.status}`);
+      }
+
+      const data = await res.json();
+      if (data.success) {
+        console.log("Item successfully updated");
+        setEditItemName("");
+        setEditItemLocation("");
+        await fetchItems();
+      } else {
+        console.log("Failed to update item", data.error);
+      }
+      console.log("you clicked edit item");
+    } catch (error) {
+      console.log("error on saveEditItem function", error);
+    }
+  };
+
+  const clickEditItem = async (itemName: string, itemLocation: string) => {
+    console.log(`Editing item : ${itemName}`);
+    // editing item
+    setOriginalItemName(itemName);
+    setEditingItemName(itemName);
+    setEditItemName(itemName);
+    setEditItemLocation(itemLocation);
+    //await saveEditItem(itemName); // this will wait for edit to complete
+    console.log("Item Edited");
+    fetchItems();
+  };
+
+  const cancelEdit = () => {
+    console.log("User Canceled Edit");
+    setEditingItemName(null);
+    setEditItemName("");
+    setEditItemLocation("");
+  };
+  // Fetch Data
   return (
-    <div className="m-4 p-4 rounded-lg shadow-md justify-center 
+    <div
+      className="m-4 p-4 rounded-lg shadow-md justify-center 
                     border-2 border-slate-700 
-                    dark:bg-gray-800 dark:border-slate-600" >
-      <form id="searchBar" className="justify-center flex"
-            onSubmit={(e) => e.preventDefault()}>
-        <input className="w-full px-4 py-2 mr-2 font-black 
+                    dark:bg-gray-800 dark:border-slate-600"
+    >
+      <form
+        id="searchBar"
+        className="justify-center flex"
+        onSubmit={(e) => e.preventDefault()}
+      >
+        <input
+          className="w-full px-4 py-2 mr-2 font-black 
                           rounded-md border border-slate-700 
-                          dark:text-white dark:bg-slate-800" 
+                          dark:text-white dark:bg-slate-800"
           type="text"
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
-          placeholder="Search..."/>
-        <button className="px-4 py-2 bg-emerald-100 hover:bg-emerald-300 
+          placeholder="Search..."
+        />
+        <button
+          className="px-4 py-2 bg-emerald-100 hover:bg-emerald-300 
                            rounded-md font-slate-50 shadow-sm border border-slate-700 
-                           dark:bg-emerald-700 dark:hover:emerald-900" 
+                           dark:bg-emerald-700 dark:hover:emerald-900"
           type="submit"
-          onClick={() => clickSearchItem()}> 
-          Search 
-        </button>        
+          onClick={() => clickSearchItem()}
+        >
+          Search
+        </button>
       </form>
 
-      <button className="w-full px-4 py-2 mt-2 mb-4 
+      <button
+        className="w-full px-4 py-2 mt-2 mb-4 
                          bg-blue-200 hover:bg-blue-400 
                          border border-slate-700 rounded-md shadow-sm 
                          text-slate-700 
@@ -194,74 +266,153 @@ export default function Dashboard({clerkId} : {clerkId: string}){
           setNewItemForm(true);
           // setTimeout - Do this after the next render
           setTimeout(() => newItemNameRef.current?.focus(), 0);
-        }}>
-        New Ite
+        }}
+      >
+        New Item
       </button>
       {newItemForm === true && (
         <form className="mt-4">
-          <input className="w-full my-2 px-4 py-2 mr-2 
+          <input
+            className="w-full my-2 px-4 py-2 mr-2 
                             font-black rounded-md 
                             border border-slate-700 
                             dark:bg-slate-800 dark:text-white"
             ref={newItemNameRef}
-            type="text" 
-            placeholder="item..." 
+            type="text"
+            placeholder="item..."
             value={newItemName}
-            onChange={(e) => setNewItemName(e.target.value)}/>
-          <input className="w-full my-2 px-4 py-2 mr-2 font-black 
+            onChange={(e) => setNewItemName(e.target.value)}
+          />
+          <input
+            className="w-full my-2 px-4 py-2 mr-2 font-black 
                             rounded-md border border-slate-700 
                             dark:bg-slate-800 dark:text-white"
-            type="text" 
-            placeholder="location..." 
+            type="text"
+            placeholder="location..."
             value={newItemLocation}
-            onChange={(e) => setNewItemLocation(e.target.value)}/>
+            onChange={(e) => setNewItemLocation(e.target.value)}
+          />
           <div className="flex items-center justify-center">
-            <button type="submit" className="my-2 mx-2 px-4 py-2 
+            <button
+              type="submit"
+              className="my-2 mx-2 px-4 py-2 
                                    bg-emerald-100 hover:bg-emerald-300 
                                    border border-slate-700 rounded-md 
                                    text-slate-700 
                                    dark:bg-emerald-700 dark:hover:bg-emerald-900 dark:text-white"
-              onClick={() => submitNewItem(newItemName, newItemLocation)}>
+              onClick={() => submitNewItem(newItemName, newItemLocation)}
+            >
               Submit
             </button>
-            <button type="button" className="my-2 px-4 py-2 
+            <button
+              type="button"
+              className="my-2 px-4 py-2 
                                     bg-emerald-100 hover:bg-emerald-300 
                                     border border-slate-700 rounded-md 
                                     text-slate-700 
                                     dark:bg-emerald-700 dark:hover:bg-emerald-900 dark:text-white"
-              onClick={() => cancelSubmit()}>
+              onClick={() => cancelSubmit()}
+            >
               Cancel
-            </button> 
-          </div> 
+            </button>
+          </div>
         </form>
       )}
       {items.length === 0 ? (
-        <p> Click New Item to add your first! </p> 
+        <p> Click New Item to add your first! </p>
       ) : (
-        <ul className="w-full px-4 py-2 mt-2 
+        <ul
+          className="w-full px-4 py-2 mt-2 
                        bg-fuchsia-300 border-2 rounded-xl shadow-md 
-                       dark:bg-fuchsia-800 dark:border-fuchsia-600">
+                       dark:bg-fuchsia-800 dark:border-fuchsia-600"
+        >
           {items.map((item) => (
-            <li key={item.name} className="flex w-full items-center px-4 py-2">
-              <button className="px-4 py-2 
+            <li key={item.name} className="w-full items-center px-4 py-2">
+              <div className="flex">
+                <button
+                  className="px-4 py-2 
                                  bg-fuchsia-100 hover:bg-fuchsia-200 
                                  text-slate-700 rounded-md shadow-sm 
-                                 dark:bg-fuchsia-600 dark:hover:bg-fuchsia-700 dark:text-white">
+                                 dark:bg-fuchsia-600 dark:hover:bg-fuchsia-700 dark:text-white"
+                  onClick={() => clickEditItem(item.name, item.location)}
+                >
                   edit
-              </button> 
-              <p className="w-full px-4 py-2 mx-2 
+                </button>
+
+                <p
+                  className="w-full px-4 py-2 mx-2 
                             bg-slate-50 border border-slate-700 rounded-md 
                             text-slate-700 
-                            dark:bg-slate-700 dark:border-slate-600 dark:text-white">
-                {item.name} - {item.location}
-              </p> 
-              <button className="px-4 py-3 
+                            dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                >
+                  {item.name} - {item.location}
+                </p>
+                <button
+                  className="px-4 py-3 
                                  bg-fuchsia-200 hover:bg-fuchsia-100 
                                  text-slate-700 rounded-md shadow-sm 
                                  dark:bg-fuchsia-600 dark:hover:bg-fuchsia-500 dark:text-white"
-                onClick={()=> clickDeleteItem(item.name)}>
-                <FaTrashAlt />
-              </button> 
+                  onClick={() => clickDeleteItem(item.name)}
+                >
+                  <FaTrashAlt />
+                </button>
+              </div>
+              <div>
+                {editingItemName === item.name && (
+                  <div className="bg-slate-100 border border-slate-700 rounded-md p-4 m-4">
+                    <form>
+                      <div className="flex">
+                        <input
+                          className="w-full my-2 px-4 py-2 mr-2 font-black 
+                              rounded-md border border-slate-700 
+                              dark:bg-slate-800 dark:text-white"
+                          type="text"
+                          value={editItemName}
+                          onChange={(e) => setEditItemName(e.target.value)}
+                        />
+                        <input
+                          className="w-full my-2 px-4 py-2 mr-2 font-black 
+                              rounded-md border border-slate-700 
+                              dark:bg-slate-800 dark:text-white"
+                          type="text"
+                          value={editItemLocation}
+                          onChange={(e) => setEditItemLocation(e.target.value)}
+                        />
+                      </div>
+                      <div className="flex">
+                        <button
+                          type="button"
+                          className="my-2 mr-2 px-4 py-2 
+                                        bg-emerald-100 hover:bg-emerald-300 
+                                        border border-slate-700 rounded-md 
+                                        text-slate-700 
+                                        dark:bg-emerald-700 dark:hover:bg-emerald-900 dark:text-white"
+                          onClick={() =>
+                            saveEditItem(
+                              originalItemName,
+                              editItemName,
+                              editItemLocation,
+                            )
+                          }
+                        >
+                          Save
+                        </button>
+                        <button
+                          type="button"
+                          className="my-2 ml-2 px-4 py-2 
+                                        bg-emerald-100 hover:bg-emerald-300 
+                                        border border-slate-700 rounded-md 
+                                        text-slate-700 
+                                        dark:bg-emerald-700 dark:hover:bg-emerald-900 dark:text-white"
+                          onClick={() => cancelEdit()}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                )}
+              </div>
             </li>
           ))}
         </ul>
